@@ -1,0 +1,253 @@
+{
+    "identification": {
+        "id": "00084d7d-1128-4a99-b209-17d3440abd8d",
+        "site": {
+            "id": "0026026f-b73a-4987-b061-b563c9aa668b",
+            "name": "SAL RBS TOPOCHICO TOPO",
+            "status": "active",
+            "type": "site",
+            "parent": {
+                "id": "70a9b6da-4214-4fae-8c0d-b85fdb7c899b",
+                "name": "SAL RBS POP VIVARO",
+                "status": "active",
+                "type": "site",
+                "parent": null
+            }
+        },
+        "mac": "d0:21:f9:f7:65:96",
+        "name": "SAL_ST_TOPO_INXT_UH24",
+        "hostname": "SAL_ST_TOPO_INXT_UH24",
+        "serialNumber": null,
+        "firmwareVersion": "1.5.1",
+        "udapiVersion": "1.4.0-186-g78ecd52",
+        "bridgeVersion": "0.26.0-no-git",
+        "subsystemId": "ae03",
+        "model": "AF-5XHD",
+        "modelName": "airFiber 5XHD",
+        "systemName": null,
+        "vendor": "Ubiquiti",
+        "vendorName": null,
+        "platformId": "af5xhd",
+        "platformName": "af5xhd",
+        "type": "airFiber",
+        "category": "wireless",
+        "authorized": true,
+        "updated": "2025-01-24T18:30:20.021Z",
+        "started": "2024-02-02T15:04:48.141Z",
+        "displayName": "SAL_ST_TOPO_INXT_UH24",
+        "role": "station",
+        "wanInterfaceId": null
+    },
+    "uplinkDevice": null,
+    "features": {
+        "has60GhzRadio": false,
+        "hasBackupAntenna": false,
+        "isUdapiSpeedTestSupported": false,
+        "isUsingUdapiUpdaters": true,
+        "isSupportRouter": false
+    },
+    "overview": {
+        "antenna": {
+            "builtIn": null,
+            "cableLoss": 0,
+            "gain": 24,
+            "id": "0",
+            "name": "Custom"
+        },
+        "downlinkCapacity": 287040000,
+        "totalCapacity": 429120000,
+        "downlinkUtilization": 0.12702768,
+        "theoreticalTotalCapacity": 429120000,
+        "theoreticalDownlinkCapacity": 287040000,
+        "theoreticalUplinkCapacity": 142080000,
+        "uplinkCapacity": 142080000,
+        "uplinkUtilization": 0.085874945,
+        "stationsCount": 1,
+        "linkStationsCount": null,
+        "linkActiveStationsCount": null,
+        "runningOnBattery": null,
+        "status": "active",
+        "canUpgrade": true,
+        "isLocateRunning": false,
+        "cpu": 27,
+        "ram": 72,
+        "signal": -52,
+        "signal2": null,
+        "signalMax": -44,
+        "remoteSignalMax": -43,
+        "uptime": 30857133,
+        "serviceUptime": 30857005,
+        "serviceTime": 30857097,
+        "distance": 2239,
+        "outageScore": 100,
+        "linkOutageScore": null,
+        "lastSeen": "2025-01-24T18:30:20.021Z",
+        "createdAt": "2024-01-25T16:02:35.843Z",
+        "voltage": null,
+        "consumption": null,
+        "biasCurrent": null,
+        "outputPower": null,
+        "outputPowers": null,
+        "maximalPower": null,
+        "frequency": 6065,
+        "dfsLockouts": [],
+        "temperature": null,
+        "powerStatus": null,
+        "batteryCapacity": null,
+        "batteryTime": null,
+        "psu": [
+            {
+                "psuType": null,
+                "connected": false,
+                "maxChargingPower": null,
+                "voltage": null,
+                "power": null,
+                "batteryCapacity": null,
+                "batteryTime": null,
+                "batteryType": null,
+                "batteryCapacityConfigured": null,
+                "batteryCapacityEstimated": null
+            }
+        ],
+        "linkScore": {
+            "linkScore": 0.991,
+            "uplinkScore": 0.996,
+            "downlinkScore": 0.986,
+            "score": 0.254,
+            "scoreMax": 1,
+            "airTime": 0,
+            "airTimeScore": null,
+            "linkScoreHint": "This link is great.",
+            "theoreticalTotalCapacity": 429120000,
+            "theoreticalDownlinkCapacity": 287040000,
+            "theoreticalUplinkCapacity": 142080000
+        },
+        "channelWidth": 60,
+        "transmitPower": 24,
+        "wirelessMode": "sta-ptp",
+        "wirelessActiveInterfaceIds": [
+            "main"
+        ],
+        "mainInterfaceSpeed": {
+            "interfaceId": "data",
+            "availableSpeed": "1000 Mbps - Full Duplex"
+        },
+        "capabilitiesEncoded": 2
+    },
+    "discovery": null,
+    "mode": "bridge",
+    "firmware": {
+        "compatible": true,
+        "current": "1.5.1",
+        "latest": "1.5.4",
+        "latestOnCurrentMajorVersion": "1.5.4",
+        "latestOver": null,
+        "upgradeRecommendedToVersion": null,
+        "prospective": null,
+        "semver": {
+            "current": {
+                "major": 1,
+                "minor": 5,
+                "patch": 1,
+                "prerelease": [],
+                "order": "65541.1.0"
+            },
+            "latest": {
+                "major": 1,
+                "minor": 5,
+                "patch": 4,
+                "prerelease": [],
+                "order": "65541.4.0"
+            },
+            "latestOver": null,
+            "latestOnCurrentMajorVersion": {
+                "major": 1,
+                "minor": 5,
+                "patch": 4,
+                "prerelease": [],
+                "order": "65541.4.0"
+            }
+        }
+    },
+    "upgrade": null,
+    "meta": {
+        "firmwareCompatibility": "compatible",
+        "failedMessageDecryption": false,
+        "failedDecryptionAt": null,
+        "maintenance": false,
+        "maintenanceEnabledAt": null,
+        "restartTimestamp": null,
+        "alias": null,
+        "note": null,
+        "activeAction": null
+    },
+    "attributes": {
+        "series": "LTU",
+        "ssid": "SAL_INXT_TOPO",
+        "apDevice": {
+            "type": "airFiber",
+            "siteId": "70a9b6da-4214-4fae-8c0d-b85fdb7c899b",
+            "name": "SAL_AP_INXT_TOPO_UH24",
+            "model": "AF-5XHD",
+            "id": "0de3bac7-a52c-4fda-8b52-d6a7ba124105",
+            "firmware": {
+                "compatible": true,
+                "current": "1.5.1",
+                "latest": "1.5.4",
+                "latestOnCurrentMajorVersion": "1.5.4",
+                "latestOver": null,
+                "upgradeRecommendedToVersion": null,
+                "prospective": null,
+                "semver": {
+                    "current": {
+                        "major": 1,
+                        "minor": 5,
+                        "patch": 1,
+                        "prerelease": [],
+                        "order": "65541.1.0"
+                    },
+                    "latest": {
+                        "major": 1,
+                        "minor": 5,
+                        "patch": 4,
+                        "prerelease": [],
+                        "order": "65541.4.0"
+                    },
+                    "latestOver": null,
+                    "latestOnCurrentMajorVersion": {
+                        "major": 1,
+                        "minor": 5,
+                        "patch": 4,
+                        "prerelease": [],
+                        "order": "65541.4.0"
+                    }
+                }
+            }
+        },
+        "country": "Licensed (5170-6200 MHz)",
+        "countryCode": 4097
+    },
+    "ipAddress": "192.168.218.109/24",
+    "ipAddressList": [],
+    "enabled": true,
+    "latestBackup": {
+        "timestamp": "2024-11-01T20:36:57.153Z",
+        "id": "55cdeb3b-5173-4755-8ba5-90aba3b67d7c"
+    },
+    "configuration": {
+        "id": "f4f50be2-f16d-4e55-8cd0-c6713d9be6da",
+        "status": "applied",
+        "hash": "6c49f72dd5ecd5dfc8ee646990a6c64e",
+        "createdAt": "2024-11-01T20:33:08.850Z"
+    },
+    "location": {
+        "altitude": 1610,
+        "elevation": null,
+        "heading": null,
+        "latitude": 25.429633,
+        "longitude": -100.986881,
+        "magneticHeading": null,
+        "roll": null,
+        "tilt": null
+    }
+}

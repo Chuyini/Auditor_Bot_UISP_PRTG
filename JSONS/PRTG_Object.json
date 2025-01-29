@@ -1,0 +1,32 @@
+{
+    "devices": [
+        {
+            "host": "",
+            "host_raw": "",
+            "group": "Raíz",
+            "group_raw": "Raíz",
+            "device": "Servidor central de PRTG",
+            "device_raw": "Servidor central de PRTG",
+            "sensor": "",
+            "sensor_raw": "",
+            "name": "Servidor central de PRTG",
+            "name_raw": "Servidor central de PRTG",
+            "tags": "",
+            "tags_raw": ""
+        },
+        {
+            "host": "10.0.0.100",
+            "host_raw": "10.0.0.100",
+            "group": "1811 - Welldex Distribution #1751",
+            "group_raw": "1811 - Welldex Distribution #1751",
+            "device": "SW",
+            "device_raw": "SW",
+            "sensor": "",
+            "sensor_raw": "",
+            "name": "SW",
+            "name_raw": "SW",
+            "tags": "Welldex prioridad:alta",
+            "tags_raw": "Welldex prioridad:alta"
+        }
+    ]
+}
