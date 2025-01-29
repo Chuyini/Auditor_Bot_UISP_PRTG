@@ -198,7 +198,7 @@ async function checkIPServices(req = request, res = response) {
                         );
 
                         if (!matchingDevices.length) {
-                            console.error(`No se encontró un dispositivo UISP para la IP: ${device.host}`);
+                            console.warn(`No se encontró un dispositivo UISP para la IP: ${device.host}`);
                             continue;
                         }
 
