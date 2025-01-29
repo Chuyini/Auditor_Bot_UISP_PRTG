@@ -15,7 +15,7 @@ async function checkIPServices(req = request, res = response) {
         });
 
         const apiUrlDevicesUISP = "https://uisp.elpoderdeinternet.mx/v2.1/devices";
-        const apiUrlDevicePRTG = `http://45.189.154.179:8045/api/table.json?content=devices&columns=host,group,device,name,comments,tags,sensor,objid&count=420&apitoken=${process.env.PRTG_UISP_DEVICE}`;
+        const apiUrlDevicePRTG = `http://45.189.154.179:8045/api/table.json?content=devices&columns=host,group,device,name,comments,tags,sensor,objid&count=555&apitoken=${process.env.PRTG_UISP_DEVICE}`;
 
         const apiResponseUISP = await axios.get(apiUrlDevicesUISP, {
             headers: {
@@ -43,6 +43,7 @@ async function checkIPServices(req = request, res = response) {
         const switchDevices = [];
         let devicesPRTG = apiResponsePRTG.data.devices;
 
+        
 
         // Debemos filtrar aquellos dispositivos de PRTG que sean Switches
         // ya que puede ser que haya dispositivos con misma IP pero interfaz diferente
@@ -148,7 +149,7 @@ async function checkIPServices(req = request, res = response) {
         Debemos hacer un respaldo antes de hacer eso*/
 
 
-        //Vamos a checar cuales no tiene id de Cliente
+
 
 
 
@@ -160,6 +161,8 @@ async function checkIPServices(req = request, res = response) {
 
 
 
+        
+        
 
         //Bloque de validacion de ID de sitio
         for (const device of devicesPRTG) {
@@ -176,14 +179,12 @@ async function checkIPServices(req = request, res = response) {
                         Bandera: "4", // Indica que se detectó un ID distinto
                         mensajePRTG: device.comments
                     });
+                    console.log("Entro 2321");
                     await toolsPRTG_Uisp.postMessageIDSite(device, newMessage);
                     devicesWithoutSiteID.push(device);
 
-                    updatedSiteIDs.push({
-                        deviceName: device.name,
-                        oldSiteID: device.comments.match(/#\$Site=([^\s]+)/)?.[1] || null,
-                        newSiteID: statusOrSiteID
-                    });
+
+                    updatedSiteIDs.push(device);
                     continue; // Salta al siguiente dispositivo, ya que manejamos este caso
                 }
 
@@ -211,8 +212,10 @@ async function checkIPServices(req = request, res = response) {
                             Bandera: "2", // Indica recalculación del ID
                             mensajePRTG: device.comments
                         });
+                        console.log("Entro 2321");
                         await toolsPRTG_Uisp.postMessageIDSite(device, newMessage);
                         devicesWithoutSiteID.push(device);
+                        updatedSiteIDs.push(device);
                         break;
 
                     case 3: // Sin ID de sitio en UISP, requiere consulta
@@ -241,7 +244,7 @@ async function checkIPServices(req = request, res = response) {
 
 
 
-        //**************************VALIDAR IDs de los Dispositivos *************************** */
+        //**************************VALIDAR IDs Clientes de los Dispositivos *************************** */
 
         const updateIDClient = [];
         const withoutIdsTags = [];
@@ -277,12 +280,12 @@ async function checkIPServices(req = request, res = response) {
 
 
         //}
-
+        
         /** **********************Ahora a checar ips de Servicio**********************/
-
+        
         const noIPPublica = [];
         const updateIPPublic = [];
-
+        //Bloque de checar IPs publicas
         for (const device of devicesPRTG) {
             const resp = await informationUISP.found_ip_services(device, devicesUISP);
 
@@ -293,7 +296,7 @@ async function checkIPServices(req = request, res = response) {
                     const betterMessageIp = device.comments.replace(`#$IP_Publica=${oldIP}`, `#$IP_Publica=${resp.ip}`);
                     updateIPPublic.push(device); // Actualización arreglo para el reporte de las actualizaciones
                     await toolsPRTG_Uisp.postMessageIPComments(device, betterMessageIp); // Actualizar el mensaje con la nueva IP pública
-                }else{//el otro caso es que este vacio pero aun asi hay que actualizar
+                } else {//el otro caso es que este vacio pero aun asi hay que actualizar
                     const NewMessageIp = device.comments + ` #$IP_Publica=${resp.ip}`;
 
                     updateIPPublic.push(device); // Actualización arreglo para el reporte de las actualizaciones
@@ -534,7 +537,7 @@ async function sendEmail(reportHtml) {
     let mailOptions = {
         from: process.env.GMAIL,
         to: 'jmlr231201@gmail.com',
-        subject: 'Reporte de Servicios BOT',
+        subject: 'Auditoría PRTG con UISP',
         html: reportHtml
     };
 
@@ -547,17 +550,7 @@ async function sendEmail(reportHtml) {
     });
 }
 
-// Función para encontrar un dispositivo en UISP basado en la IP
-function findDeviceInUISP(devicesUISP, host) {
-    return devicesUISP.filter(uispDevice =>
-        uispDevice.ipAddress === host || uispDevice.ipAddress === `${host}/24`
-    );
-}
 
-// Función para generar un nuevo mensaje con el ID de sitio
-function generateNewMessage(comments, newSiteID) {
-    return `${comments}\n\n#$Site=${newSiteID}`;
-}
 
 
 

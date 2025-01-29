@@ -157,7 +157,12 @@ async function isIdSiteOkay(uispNet_devices, PRTG_device) {
 }
 async function cleanAndRepostMessage(PRTG_device) {
     try {
-        if (!PRTG_device || !PRTG_device.objid || !PRTG_device.comments) {
+        if (!PRTG_device || !PRTG_device.objid ) {
+
+            if(!PRTG_device.comments){
+                console.warn("No hay necesidad de repostear o limpiar\n");
+                return 0;
+            }
             throw new Error("Faltan parámetros o el dispositivo no tiene comentarios.");
         }
 

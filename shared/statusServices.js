@@ -54,7 +54,7 @@ async function found_Id_Uisp_Prtg(sensorData) {//extrae el id como pueda
             console.log("ID extraído desde la API:", idToUisp);
 
             // Crear mensaje para actualizar los comentarios
-            const newID = `\n\n#$idClientU=${idToUisp}`;
+            const newID = sensorData.comments+` \n\n#$idClientU=${idToUisp} `;
             await utilsPost.postMessageIDClient(sensorData, newID); // Actualizar los comentarios en PRTG
 
             return { id: idToUisp, consult: true }; // Indicar que se hizo consulta y devolver el ID
@@ -82,7 +82,7 @@ async function found_Id_Uisp_Prtg(sensorData) {//extrae el id como pueda
 async function found_ip_services(sensorData, devicesUISP) {
     try {
         // Validar datos de entrada
-        if (!sensorData || !sensorData.comments) {
+        if (!sensorData) {
             throw new Error("Dispositivo sin comentario o sensor nulo: ", sensorData);
 
         }
