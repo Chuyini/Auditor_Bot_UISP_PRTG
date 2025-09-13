@@ -37,8 +37,6 @@ async function probeEmail(req = request, res = response) {
 
 async function sendEmail(reportHtml) {
 
-
-
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
