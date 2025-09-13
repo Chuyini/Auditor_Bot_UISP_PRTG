@@ -7,53 +7,36 @@ const toolsPRTG_Uisp = require("../shared/UtilsPrtgUisp");
 const html = require('../shared/htmlMail');
 const nodemailer = require('nodemailer');
 
-
 // Variable global para almacenar las actualizaciones realizadas
 let globalUpdates = {
-    updatedSiteIDs: new Set(), // Usamos Set para evitar duplicados
-    updateIPPublic: new Set(),
-    updateIDClient: new Set(),
-    devicesWithoutSiteID: new Set(),
-    askAboutDevicesWithoutSite: new Set(),
-    noIPPublica: new Set(),
-    switchDevices: new Set(),
-    withoutIdsTags: new Set(),
-    trueServicesEnd: new Set(),
-    trueServicesSuspended: new Set(),
-    finalNotFoundServices: new Set()
+    updatedSiteIDs: [],
+    updateIPPublic: [],
+    updateIDClient: [],
+    devicesWithoutSiteID: [],
+    askAboutDevicesWithoutSite: [],
+    noIPPublica: [],
+    switchDevices: [],
+    withoutIdsTags: [],
+    trueServicesEnd: [],
+    trueServicesSuspended: [],
+    finalNotFoundServices: []
 };
 
 // Función principal con reintentos
 async function checkIPServices(req = request, res = response) {
     let retries = 0;
-    const maxRetries = 5;
+    const maxRetries = 4;
     let apiResponsePRTG; // Declarar la variable fuera del bucle
-    //Setear la variables de 0
-    globalUpdates.trueServicesEnd = new Set();
-    globalUpdates.trueServicesSuspended = new Set();
-    globalUpdates.finalNotFoundServices = new Set();
-    globalUpdates.withoutIdsTags = new Set();
-    globalUpdates.switchDevices = new Set();
-    globalUpdates.devicesWithoutSiteID = new Set();
-    globalUpdates.askAboutDevicesWithoutSite = new Set();
-    globalUpdates.updatedSiteIDs = new Set();
-    globalUpdates.noIPPublica = new Set();
-    globalUpdates.updateIPPublic = new Set();
-    globalUpdates.updateIDClient = new Set();
-    
 
     while (retries < maxRetries) {
         try {
-
-
-
             const agent = new https.Agent({
                 rejectUnauthorized: false,
             });
 
             // URLs de las APIs
             const apiUrlDevicesUISP = "https://uisp.elpoderdeinternet.mx/v2.1/devices";
-            const apiUrlDevicePRTG = `http://45.189.154.179:8045/api/table.json?content=devices&columns=host,group,device,name,comments,tags,sensor,objid&count=3000&apitoken=${process.env.PRTG_UISP_DEVICE}`;
+            const apiUrlDevicePRTG = `http://45.189.154.179:8045/api/table.json?content=devices&columns=host,group,device,name,comments,tags,sensor,objid&count=555&apitoken=${process.env.PRTG_UISP_DEVICE}`;
 
             // Llamadas a las APIs
             const apiResponseUISP = await axios.get(apiUrlDevicesUISP, {
@@ -77,29 +60,34 @@ async function checkIPServices(req = request, res = response) {
             console.log("Éxito en las llamadas de APIs de UISP y PRTG");
 
             const devicesUISP = apiResponseUISP.data;
+            const switchDevices = [];
             let devicesPRTG = apiResponsePRTG.data.devices;
 
             // 1. Filtrar dispositivos de tipo switch
             devicesPRTG = devicesPRTG.filter((device) => {
                 if (device.tags.includes("sw")) {
-                    globalUpdates.switchDevices.add(device); // Usamos add para evitar duplicados
+                    switchDevices.push(device);
                     return false;
                 }
                 return true;
             });
 
             // 2. Filtrar dispositivos cancelados
+            const canceledDevices = [];
             devicesPRTG = devicesPRTG.filter((device) => {
                 if (device.tags.includes("cancelado")) {
-                    return false; // No los incluimos en el procesamiento
+                    canceledDevices.push(device);
+                    return false;
                 }
                 return true;
             });
 
             // 3. Filtrar dispositivos de sonda local o especiales
+            const noSondaOrSpecialDevices = [];
             devicesPRTG = devicesPRTG.filter((device) => {
                 if (device.name.includes("Servidor central de PRTG") || device.name.includes("Dispositivo de sonda") || (device.group == 'Routers y Sensores')) {
-                    return false; // No los incluimos en el procesamiento
+                    noSondaOrSpecialDevices.push(device);
+                    return false;
                 }
                 return true;
             });
@@ -108,20 +96,26 @@ async function checkIPServices(req = request, res = response) {
             const deviceDuplicates = findDuplicateDevices(devicesPRTG);
 
             // 5. Validar IDs de sitio
+            const devicesWithoutSiteID = [];
+            const ipAndSite = [];
+            const askAboutDevicesWithoutSite = [];
+            const updatedSiteIDs = [];
+
             for (const device of devicesPRTG) {
                 try {
-                    await toolsPRTG_Uisp.cleanAndRepostMessage(device);
                     const statusOrSiteID = await toolsPRTG_Uisp.isIdSiteOkay(devicesUISP, device);
 
                     if (typeof statusOrSiteID === 'string' && /^[a-zA-Z0-9-]+$/.test(statusOrSiteID)) {
                         const newMessage = `${device.comments}\n\n #$Site=${statusOrSiteID}`;
-
+                        ipAndSite.push({
+                            Sitio: statusOrSiteID,
+                            ip: device.host,
+                            Bandera: "4",
+                            mensajePRTG: device.comments
+                        });
                         await toolsPRTG_Uisp.postMessageIDSite(device, newMessage);
-
-                        globalUpdates.devicesWithoutSiteID.add(device); // Usamos add para evitar duplicados
-                        globalUpdates.updatedSiteIDs.add(device); // Usamos add para evitar duplicados
-                        console.log("Entra a la a   condicion  ");
-
+                        devicesWithoutSiteID.push(device);
+                        updatedSiteIDs.push(device);
                         continue;
                     }
 
@@ -131,13 +125,8 @@ async function checkIPServices(req = request, res = response) {
                         case 2: // No se encontró el ID
                             const matchingDevices = devicesUISP.filter(uispDevice =>
                                 uispDevice.ipAddress === device.host ||
-                                uispDevice.ipAddress === `${device.host}/24` ||
-                                uispDevice.ipAddress === `${device.host}/23` ||
-                                uispDevice.ipAddress === `${device.host}/22` ||
-                                uispDevice.ipAddress === `${device.host}/21` ||
-                                uispDevice.ipAddress === `${device.host}/20`
+                                uispDevice.ipAddress === `${device.host}/24`
                             );
-
 
                             if (!matchingDevices.length) {
                                 console.warn(`No se encontró un dispositivo UISP para la IP: ${device.host}`);
@@ -146,13 +135,20 @@ async function checkIPServices(req = request, res = response) {
 
                             const newIDSite = matchingDevices[0].identification.site.id;
                             const newMessage = `${device.comments}\n\n#$Site=${newIDSite}`;
+                            ipAndSite.push({
+                                Sitio: newIDSite,
+                                ip: device.host,
+                                tamIDSite: matchingDevices.length,
+                                Bandera: "2",
+                                mensajePRTG: device.comments
+                            });
                             await toolsPRTG_Uisp.postMessageIDSite(device, newMessage);
-                            globalUpdates.devicesWithoutSiteID.add(device); // Usamos add para evitar duplicados
-                            globalUpdates.updatedSiteIDs.add(device); // Usamos add para evitar duplicados
+                            devicesWithoutSiteID.push(device);
+                            updatedSiteIDs.push(device);
                             break;
 
                         case 3: // Sin ID de sitio en UISP, requiere consulta
-                            globalUpdates.askAboutDevicesWithoutSite.add(device); // Usamos add para evitar duplicados
+                            askAboutDevicesWithoutSite.push(device);
                             break;
 
                         case 4: // Todo está en orden, ID coinciden
@@ -172,18 +168,20 @@ async function checkIPServices(req = request, res = response) {
             }
 
             // 6. Validar IDs de clientes
+            const updateIDClient = [];
+            const withoutIdsTags = [];
+
             for (const device of devicesPRTG) {
                 try {
-                    await toolsPRTG_Uisp.cleanAndRepostMessage(device);
                     const responsIDFunction = await informationUISP.found_Id_Uisp_Prtg(device);
-
+                    await toolsPRTG_Uisp.cleanAndRepostMessage(device);
 
                     if (responsIDFunction?.id && responsIDFunction.consult === false) {
                         device.idClient = responsIDFunction.id;
                     } else if (responsIDFunction?.id && responsIDFunction.consult === true) {
-                        globalUpdates.updateIDClient.add(device); // Usamos add para evitar duplicados
+                        updateIDClient.push(device);
                     } else if (!responsIDFunction || !responsIDFunction.id) {
-                        globalUpdates.withoutIdsTags.add(device); // Usamos add para evitar duplicados
+                        withoutIdsTags.push(device);
                     }
                 } catch (error) {
                     console.error(`Error procesando el dispositivo bloque de validacion de IDs ${device.name || device.host}:`, error);
@@ -191,42 +189,35 @@ async function checkIPServices(req = request, res = response) {
             }
 
             // 7. Validar IPs públicas
-            for (const device of devicesPRTG) {
-                await toolsPRTG_Uisp.cleanAndRepostMessage(device);
+            const noIPPublica = [];
+            const updateIPPublic = [];
 
+            for (const device of devicesPRTG) {
                 const resp = await informationUISP.found_ip_services(device, devicesUISP);
 
                 if (resp.updateC === true && resp.ip) {
                     const oldIP = await toolsPRTG_Uisp.identifyIPPublic(device);
                     if (oldIP) {
                         const betterMessageIp = device.comments.replace(`#$IP_Publica=${oldIP}`, ` #$IP_Publica=${resp.ip}`);
-                        globalUpdates.updateIPPublic.add(device); // Usamos add para evitar duplicados
+                        updateIPPublic.push(device);
                         await toolsPRTG_Uisp.postMessageIPComments(device, betterMessageIp);
                     } else {
                         const NewMessageIp = device.comments + ` #$IP_Publica=${resp.ip}`;
-                        globalUpdates.updateIPPublic.add(device); // Usamos add para evitar duplicados
+                        updateIPPublic.push(device);
                         await toolsPRTG_Uisp.postMessageIPComments(device, NewMessageIp);
-                        await toolsPRTG_Uisp.cleanAndRepostMessage(device);
                     }
                 } else if (resp.updateC === false && resp.ip) {
                     console.log("Todo en orden con la IP pública");
                 } else if (resp.updateC === false && !resp.ip) {
                     console.log("NO IP PUBLICA\n");
-                    globalUpdates.noIPPublica.add(device); // Usamos add para evitar duplicados
+                    noIPPublica.push(device);
                 }
             }
 
             // 8. Buscar dispositivos no encontrados en UISP
             const ipsNoEncontradas = [];
             devicesPRTG.forEach(devicePRTG => {
-                const foundDevice = devicesUISP.find(deviceUISP =>
-                    deviceUISP.ipAddress === devicePRTG.host ||
-                    deviceUISP.ipAddress === `${devicePRTG.host}/24` ||
-                    deviceUISP.ipAddress === `${devicePRTG.host}/23` ||
-                    deviceUISP.ipAddress === `${devicePRTG.host}/22` ||
-                    deviceUISP.ipAddress === `${devicePRTG.host}/21` ||
-                    deviceUISP.ipAddress === `${devicePRTG.host}/20`
-                );
+                const foundDevice = devicesUISP.find(deviceUISP => deviceUISP.ipAddress === devicePRTG.host || deviceUISP.ipAddress === devicePRTG.host + "/24");
                 if (!foundDevice) {
                     const notDevicesF = {
                         "company": devicePRTG.group,
@@ -266,12 +257,17 @@ async function checkIPServices(req = request, res = response) {
                     }
                 }
 
+                const trueServicesEnd = [];
+                const trueServicesSuspended = [];
+                const finalNotFoundServices = servicesPRTG_NotFounded;
+
                 for (const devPRTG of servicesPRTG_NotFounded) {
                     servicesEndAndSuspended.forEach((serviceGroup) => {
                         if (serviceGroup.servicesSuspended.length > 0) {
                             serviceGroup.servicesSuspended.forEach(service => {
                                 if (stringSimilarity.compareTwoStrings(devPRTG.name, service.name) > 0.6) {
-                                    globalUpdates.trueServicesSuspended.add(devPRTG); // Usamos add para evitar duplicados
+                                    trueServicesSuspended.push(devPRTG);
+                                    finalNotFoundServices.pop(devPRTG);
                                 }
                             });
                         }
@@ -279,19 +275,32 @@ async function checkIPServices(req = request, res = response) {
                         if (serviceGroup.servicesEnded.length > 0) {
                             serviceGroup.servicesEnded.forEach(service => {
                                 if (stringSimilarity.compareTwoStrings(devPRTG.name, service.name) > 0.6) {
-                                    globalUpdates.trueServicesEnd.add(devPRTG); // Usamos add para evitar duplicados
+                                    trueServicesEnd.push(devPRTG);
+                                    finalNotFoundServices.pop(devPRTG);
                                 }
                             });
                         }
                     });
                 }
 
-                // Guardar dispositivos no encontrados
-                servicesPRTG_NotFounded.forEach(device => globalUpdates.finalNotFoundServices.add(device)); // Usamos add para evitar duplicados
+                // Actualizar las variables globales
+                globalUpdates.trueServicesEnd = trueServicesEnd;
+                globalUpdates.trueServicesSuspended = trueServicesSuspended;
+                globalUpdates.finalNotFoundServices = finalNotFoundServices;
             }
 
+            // Actualizar las variables globales con las actualizaciones realizadas
+            globalUpdates.updatedSiteIDs = updatedSiteIDs;
+            globalUpdates.updateIPPublic = updateIPPublic;
+            globalUpdates.updateIDClient = updateIDClient;
+            globalUpdates.devicesWithoutSiteID = devicesWithoutSiteID;
+            globalUpdates.askAboutDevicesWithoutSite = askAboutDevicesWithoutSite;
+            globalUpdates.noIPPublica = noIPPublica;
+            globalUpdates.switchDevices = switchDevices;
+            globalUpdates.withoutIdsTags = withoutIdsTags;
+
             // Si no hay más actualizaciones pendientes, salimos del bucle
-            if (globalUpdates.updatedSiteIDs.size === 0 && globalUpdates.updateIPPublic.size === 0 && globalUpdates.updateIDClient.size === 0) {
+            if (updatedSiteIDs.length === 0 && updateIPPublic.length === 0 && updateIDClient.length === 0) {
                 break;
             }
 
@@ -308,17 +317,17 @@ async function checkIPServices(req = request, res = response) {
     if (apiResponsePRTG && apiResponsePRTG.data) { // Verificar si apiResponsePRTG está definido
         const totalDev = apiResponsePRTG.data.devices.length;
         const htmlReport = html.generateReportHtml(
-            new Set(Array.from(new Set(globalUpdates.trueServicesEnd))), // Convertimos Set a Array
-            Array.from(new Set(globalUpdates.trueServicesSuspended)),
-            Array.from(new Set(globalUpdates.finalNotFoundServices)),
-            Array.from(new Set(globalUpdates.withoutIdsTags)),
-            Array.from(new Set(globalUpdates.switchDevices)),
-            Array.from(new Set(globalUpdates.devicesWithoutSiteID)),
-            Array.from(new Set(globalUpdates.askAboutDevicesWithoutSite)),
-            Array.from(new Set(globalUpdates.updatedSiteIDs)),
-            Array.from(new Set(globalUpdates.noIPPublica)),
-            Array.from(new Set(globalUpdates.updateIPPublic)),
-            Array.from(new Set(globalUpdates.updateIDClient)),
+            globalUpdates.trueServicesEnd,
+            globalUpdates.trueServicesSuspended,
+            globalUpdates.finalNotFoundServices,
+            globalUpdates.withoutIdsTags,
+            globalUpdates.switchDevices,
+            globalUpdates.devicesWithoutSiteID,
+            globalUpdates.askAboutDevicesWithoutSite,
+            globalUpdates.updatedSiteIDs,
+            globalUpdates.noIPPublica,
+            globalUpdates.updateIPPublic,
+            globalUpdates.updateIDClient,
             totalDev
         );
 
@@ -327,9 +336,6 @@ async function checkIPServices(req = request, res = response) {
         res.status(200).json({
             "Mensaje": "Dispositivos auditados",
         });
-
-
-
 
         console.log("Fue mandado con éxito el mensaje");
     } else {
@@ -375,7 +381,7 @@ async function sendEmail(reportHtml) {
 
     let mailOptions = {
         from: process.env.GMAIL,
-        to: 'noc@elpoderdeinternet.mx',
+        to: 'jmlr231201@gmail.com',
         subject: 'Auditoría PRTG con UISP',
         html: reportHtml
     };

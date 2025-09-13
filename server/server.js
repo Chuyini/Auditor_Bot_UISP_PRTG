@@ -9,6 +9,7 @@ class Server {
         this.app = express();
         this.port = process.env.PORT;
         this.auditorPATH = "/api/audit";
+        
         this.middlewares();
         this.routes();
 
