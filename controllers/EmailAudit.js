@@ -54,6 +54,7 @@ async function sendEmail(reportHtml) {
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
             logger.error('Error al enviar el correo', { error });
+            throw new Error('Error al enviar el correo: ' + error.message);
         } else {
             logger.info('Correo enviado correctamente', { response: info.response });
         }
