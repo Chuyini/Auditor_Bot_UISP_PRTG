@@ -19,6 +19,7 @@
     "ip": "^2.0.1",
     "nodemailer": "^6.9.16",
     "nodemon": "^3.1.9",
-    "string-similarity": "^4.0.4"
+    "string-similarity": "^4.0.4",
+    "winston": "^3.17.0"
   }
 }
