@@ -19,9 +19,9 @@ const logger = winston.createLogger({
 
 async function probeEmail(req = request, res = response) {
     try {
-        console.log("La contraseña de pasa es:", process.env.PASSWORD_GMAIL);   
+        console.log("La contraseña de pasa es:", process.env.PASSWORD_GMAIL);
         console.log("El correo es:", process.env.GMAIL);
-        
+
         const reportHtml = "<h1>Reporte De prueba de que funcia EMAIL</h1><p>Asegurese de que funciona el correo como esta confiurado aqui.</p>";
         await sendEmail(reportHtml);
         res.status(200).json({ msg: "Correo enviado exitosamente" });
@@ -50,7 +50,7 @@ async function sendEmail(reportHtml) {
     let mailOptions = {
         from: process.env.GMAIL,
         to: 'jmlr231201@gmail.com',
-        subject: 'Auditoría PRTG con UISP',
+        subject: 'prueba de bebe',
         html: reportHtml
     };
 
@@ -64,7 +64,6 @@ async function sendEmail(reportHtml) {
     });
 
 }
-
 module.exports = {
     probeEmail
 }   

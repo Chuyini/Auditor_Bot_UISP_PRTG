@@ -1,1 +1,6 @@
 {"error":{"code":"EDNS","command":"CONN","hostname":"smtp.gmail.com","syscall":"queryA"},"level":"error","message":"Error al enviar el correo","timestamp":"2025-09-13T17:34:07.221Z"}
+{"level":"info","message":"Correo enviado correctamente","response":"250 2.0.0 OK  1757788866 46e09a7af769-7524986a7c3sm1802587a34.10 - gsmtp","timestamp":"2025-09-13T18:41:06.348Z"}
+{"level":"info","message":"Correo enviado correctamente","response":"250 2.0.0 OK  1757788926 586e51a60fabf-32d357d2f9fsm2097191fac.24 - gsmtp","timestamp":"2025-09-13T18:42:05.891Z"}
+{"level":"info","message":"Correo enviado correctamente","response":"250 2.0.0 OK  1757788942 5614622812f47-43b82a72657sm1409585b6e.15 - gsmtp","timestamp":"2025-09-13T18:42:22.357Z"}
+{"level":"info","message":"Correo enviado correctamente","response":"250 2.0.0 OK  1757789005 46e09a7af769-7524be797e6sm1778383a34.29 - gsmtp","timestamp":"2025-09-13T18:43:25.669Z"}
+{"level":"info","message":"Correo enviado correctamente","response":"250 2.0.0 OK  1757789239 586e51a60fabf-330a6e449a1sm302257fac.27 - gsmtp","timestamp":"2025-09-13T18:47:18.897Z"}
