@@ -375,7 +375,7 @@ async function sendEmail(reportHtml) {
 
     let mailOptions = {
         from: process.env.GMAIL,
-        to: 'noc@elpoderdeinternet.mx',
+        to: 'jmlr231201@gmail.com',//'noc@elpoderdeinternet.mx',
         subject: 'Auditoría PRTG con UISP',
         html: reportHtml
     };
