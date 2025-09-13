@@ -1,0 +1,1 @@
+{"error":{"code":"EDNS","command":"CONN","hostname":"smtp.gmail.com","syscall":"queryA"},"level":"error","message":"Error al enviar el correo","timestamp":"2025-09-13T17:34:07.221Z"}
