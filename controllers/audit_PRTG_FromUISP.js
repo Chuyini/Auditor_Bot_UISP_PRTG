@@ -26,7 +26,7 @@ let globalUpdates = {
 // Función principal con reintentos
 async function checkIPServices(req = request, res = response) {
     let retries = 0;
-    const maxRetries = 5;
+    const maxRetries = 1;
     let apiResponsePRTG; // Declarar la variable fuera del bucle
     //Setear la variables de 0
     globalUpdates.trueServicesEnd = new Set();
