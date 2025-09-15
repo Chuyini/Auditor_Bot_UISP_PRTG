@@ -53,8 +53,8 @@ async function sendEmail(reportHtml) {
 
         if (error) throw error;
         console.log('✅ Correo enviado con Resend:', data);
-    } catch (err) {
-        console.error('❌ Error al enviar con Resend:', err.message);
+    } catch (e) {
+        console.error('❌ Error al enviar con Resend:', e);
     }
 }
 module.exports = {
