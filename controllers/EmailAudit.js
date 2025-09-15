@@ -35,37 +35,37 @@ async function probeEmail(req = request, res = response) {
 
 }
 
-async function sendEmail(reportHtml) {
 
-    let transporter = nodemailer.createTransport({
+
+async function sendEmail(reportHtml) {
+    const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 587,
         secure: false, // true para 465, false para 587
         auth: {
             user: process.env.GMAIL,
             pass: process.env.PASSWORD_GMAIL
-        }, tls: {
+        },
+        tls: {
             rejectUnauthorized: false
-        }
-
+        },
+        connectionTimeout: 10000 // 10 segundos
     });
 
-    let mailOptions = {
+    const mailOptions = {
         from: process.env.GMAIL,
         to: 'jmlr231201@gmail.com',
-        subject: 'prueba de bebe',
+        subject: 'Auditoría PRTG con UISP',
         html: reportHtml
     };
 
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            logger.error('Error al enviar el correo', { error });
-            throw new Error('Error al enviar el correo: ' + error.message);
-        } else {
-            logger.info('Correo enviado correctamente', { response: info.response });
-        }
-    });
-
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('✅ Correo enviado con Gmail:', info.response);
+    } catch (error) {
+        console.error('❌ Error al enviar con Gmail:', error.message);
+        throw new Error('Error al enviar el correo: ' + error.message);
+    }
 }
 module.exports = {
     probeEmail
