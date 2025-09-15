@@ -43,8 +43,8 @@ async function sendEmail(reportHtml) {
         port: 587,
         secure: false, // true para 465, false para 587
         auth: {
-            user: "botlaravazquez@gmail.com",
-            pass: "buwjsibfhwsrlyck"
+            user: 'botlaravazquez@gmail.com',
+            pass: 'buwjsibfhwsrlyck'
         },
         tls: {
             rejectUnauthorized: false
