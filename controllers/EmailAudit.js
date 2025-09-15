@@ -41,7 +41,6 @@ async function sendEmail(reportHtml) {
         host: 'smtp.gmail.com',
         port: 587,
         secure: false, // true para 465, false para 587
-        service: 'gmail',
         auth: {
             user: process.env.GMAIL,
             pass: process.env.PASSWORD_GMAIL
