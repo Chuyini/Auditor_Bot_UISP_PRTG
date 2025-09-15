@@ -45,7 +45,7 @@ async function probeEmail(req = request, res = response) {
 async function sendEmail(reportHtml) {
     try {
         const { data, error } = await resend.emails.send({
-            from: 'notificaciones@copayment.mx',
+            from: process.env.GMAIL,
             to: 'jmlr231201@gmail.com',
             subject: 'Auditoría PRTG con UISP',
             html: reportHtml,
