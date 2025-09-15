@@ -43,8 +43,8 @@ async function sendEmail(reportHtml) {
         port: 587,
         secure: false, // true para 465, false para 587
         auth: {
-            user: 'botlaravazquez@gmail.com',
-            pass: 'buwjsibfhwsrlyck'
+            user: process.env.GMAIL,
+            pass: process.env.PASSWORD_GMAIL
         },
         tls: {
             rejectUnauthorized: false
@@ -53,7 +53,7 @@ async function sendEmail(reportHtml) {
     });
 
     const mailOptions = {
-        from: 'botlaravazquez@gmail.com',
+        from: process.env.GMAIL,
         to: 'jmlr231201@gmail.com',
         subject: 'Auditoría PRTG con UISP',
         html: reportHtml
