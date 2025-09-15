@@ -38,11 +38,17 @@ async function probeEmail(req = request, res = response) {
 async function sendEmail(reportHtml) {
 
     let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // true para 465, false para 587
         service: 'gmail',
         auth: {
             user: process.env.GMAIL,
             pass: process.env.PASSWORD_GMAIL
+        }, tls: {
+            rejectUnauthorized: false
         }
+
     });
 
     let mailOptions = {
