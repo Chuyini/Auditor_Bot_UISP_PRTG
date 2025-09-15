@@ -2,6 +2,9 @@
 const { response, request } = require("express");
 const nodemailer = require('nodemailer');
 const winston = require('winston');
+const { Resend } = require('resend');
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const logger = winston.createLogger({
     level: 'info',
@@ -37,34 +40,21 @@ async function probeEmail(req = request, res = response) {
 
 
 
+
+
 async function sendEmail(reportHtml) {
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, // true para 465, false para 587
-        auth: {
-            user: process.env.GMAIL,
-            pass: process.env.PASSWORD_GMAIL
-        },
-        tls: {
-            rejectUnauthorized: false
-        },
-        connectionTimeout: 10000 // 10 segundos
-    });
-
-    const mailOptions = {
-        from: process.env.GMAIL,
-        to: 'jmlr231201@gmail.com',
-        subject: 'Auditoría PRTG con UISP',
-        html: reportHtml
-    };
-
     try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log('✅ Correo enviado con Gmail:', info.response);
-    } catch (error) {
-        console.error('❌ Error al enviar con Gmail:', error.message);
-        throw new Error('Error al enviar el correo: ' + error.message);
+        const { data, error } = await resend.emails.send({
+            from: 'notificaciones@copayment.mx',
+            to: 'jmlr231201@gmail.com',
+            subject: 'Auditoría PRTG con UISP',
+            html: reportHtml,
+        });
+
+        if (error) throw error;
+        console.log('✅ Correo enviado con Resend:', data);
+    } catch (err) {
+        console.error('❌ Error al enviar con Resend:', err.message);
     }
 }
 module.exports = {
