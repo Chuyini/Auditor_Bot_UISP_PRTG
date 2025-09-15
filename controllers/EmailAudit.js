@@ -53,7 +53,7 @@ async function sendEmail(reportHtml) {
     });
 
     const mailOptions = {
-        from: process.env.GMAIL,
+        from: 'botlaravazquez@gmail.com',
         to: 'jmlr231201@gmail.com',
         subject: 'Auditoría PRTG con UISP',
         html: reportHtml
