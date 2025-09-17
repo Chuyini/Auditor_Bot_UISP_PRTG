@@ -2,9 +2,6 @@
 const { response, request } = require("express");
 const nodemailer = require('nodemailer');
 const winston = require('winston');
-const { Resend } = require('resend');
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 const logger = winston.createLogger({
     level: 'info',
@@ -38,24 +35,37 @@ async function probeEmail(req = request, res = response) {
 
 }
 
-
-
-
-
 async function sendEmail(reportHtml) {
-    try {
-        const { data, error } = await resend.emails.send({
-            from: 'chatbotvazquez@bot.lara.com',
-            to: 'jmlr231201@gmail.com',
-            subject: 'Auditoría PRTG con UISP',
-            html: reportHtml,
-        });
 
-        if (error) throw error;
-        console.log('✅ Correo enviado con Resend:', data);
-    } catch (e) {
-        console.error('❌ Error al enviar con Resend:', e);
-    }
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // true para 465, false para 587
+        auth: {
+            user: process.env.GMAIL,
+            pass: process.env.PASSWORD_GMAIL
+        }, tls: {
+            rejectUnauthorized: false
+        }
+
+    });
+
+    let mailOptions = {
+        from: process.env.GMAIL,
+        to: 'jmlr231201@gmail.com',
+        subject: 'prueba de bebe',
+        html: reportHtml
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            logger.error('Error al enviar el correo', { error });
+            throw new Error('Error al enviar el correo: ' + error.message);
+        } else {
+            logger.info('Correo enviado correctamente', { response: info.response });
+        }
+    });
+
 }
 module.exports = {
     probeEmail
